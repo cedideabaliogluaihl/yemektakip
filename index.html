@@ -40,23 +40,21 @@
             color: white;
             padding: 24px 16px 32px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
         }
         .header h1 { 
-            font-size: 1.6rem; 
+            font-size: 1.5rem; 
             font-weight: 800; 
             letter-spacing: -0.5px;
         }
         .header p { 
-            font-size: 1rem; 
+            font-size: 0.95rem; 
             opacity: 0.85; 
             margin-top: 6px;
             font-weight: 500;
         }
 
-        /* MONTH SELECTOR */
-        .month-selector {
+        /* MONTH SELECTOR - DROPDOWN */
+        .month-bar {
             background: var(--card);
             border-radius: 20px;
             padding: 20px 16px;
@@ -65,82 +63,90 @@
             z-index: 2;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             border: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
         }
-        .month-selector h3 {
-            font-size: 0.9rem;
+        .month-bar label {
+            font-size: 0.85rem;
             color: var(--text-light);
-            margin-bottom: 12px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-weight: 700;
         }
-        .month-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-        @media (min-width: 640px) {
-            .month-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-        .month-btn {
-            padding: 14px 8px;
+        .month-select {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px 16px;
             border: 2px solid var(--border);
             border-radius: 14px;
-            background: white;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            font-family: inherit;
-            color: var(--text);
-        }
-        .month-btn:hover { border-color: var(--primary-light); }
-        .month-btn.active {
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 15px rgba(37,99,235,0.3);
-        }
-        .month-btn .fee {
-            display: block;
-            font-size: 0.75rem;
-            opacity: 0.8;
-            margin-top: 2px;
-            font-weight: 600;
-        }
-
-        /* SECTION */
-        .section {
-            background: var(--card);
-            border-radius: 20px;
-            padding: 20px 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-        }
-        .section-title {
             font-size: 1.1rem;
             font-weight: 700;
-            margin-bottom: 16px;
+            color: var(--primary);
+            background: white;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .month-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+        }
+        .fee-input-wrap {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--text);
+            flex: 1;
+            min-width: 160px;
         }
-        .section-title .icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
+        .fee-input-wrap label {
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .fee-input {
+            flex: 1;
+            padding: 14px 12px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-align: right;
+            color: var(--primary);
+            outline: none;
+            font-family: inherit;
+        }
+        .fee-input:focus {
+            border-color: var(--primary-light);
         }
 
-        /* STATS - AYLIK */
+        /* CURRENT MONTH DISPLAY */
+        .current-month {
+            background: linear-gradient(135deg, #1e3a5f, #2563eb);
+            color: white;
+            border-radius: 20px;
+            padding: 24px 20px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .current-month h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .current-month .fee-display {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+        .current-month .fee-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* MONTHLY STATS */
         .monthly-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -162,21 +168,35 @@
             letter-spacing: 0.5px;
         }
         .stat-box .value { 
-            font-size: 1.5rem; 
+            font-size: 1.4rem; 
             font-weight: 800; 
             margin-top: 4px;
         }
         .stat-box .value.blue { color: var(--primary); }
         .stat-box .value.green { color: var(--success); }
 
-        /* INPUTS */
-        .input-row {
+        /* ADD PERSON */
+        .add-section {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+        .add-section h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .add-row {
             display: flex;
             gap: 10px;
-            align-items: stretch;
         }
-        .input-row input[type="text"],
-        .input-row input[type="number"] {
+        .add-row input {
             flex: 1;
             padding: 14px 16px;
             border: 2px solid var(--border);
@@ -184,14 +204,12 @@
             font-size: 1.05rem;
             font-weight: 500;
             outline: none;
-            transition: all 0.2s;
             font-family: inherit;
         }
-        .input-row input:focus {
+        .add-row input:focus {
             border-color: var(--primary-light);
             box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
         }
-
         .btn {
             padding: 14px 22px;
             border: none;
@@ -216,8 +234,8 @@
         .btn-danger {
             background: #fee2e2;
             color: var(--danger);
-            font-size: 0.9rem;
-            padding: 10px 16px;
+            font-size: 0.85rem;
+            padding: 8px 12px;
         }
         .btn-success {
             background: linear-gradient(135deg, #10b981, #059669);
@@ -229,44 +247,44 @@
             color: var(--primary);
             border: 2px solid var(--primary-light);
         }
-        .btn-sm { padding: 10px 16px; font-size: 0.9rem; }
 
-        /* CURRENT MONTH DISPLAY */
-        .current-month {
-            background: linear-gradient(135deg, #1e3a5f, #2563eb);
-            color: white;
+        /* PEOPLE LIST */
+        .people-section {
+            background: var(--card);
             border-radius: 20px;
-            padding: 24px 20px;
+            padding: 20px 16px;
             margin-bottom: 16px;
-            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
         }
-        .current-month h2 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 8px;
+        .people-section h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .current-month .fee-display {
-            font-size: 2rem;
-            font-weight: 800;
-            opacity: 0.95;
-        }
-        .current-month .fee-label {
-            font-size: 0.85rem;
-            opacity: 0.7;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .people-section h3 .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
         }
 
-        /* PERSON ROW */
         .person-list { padding: 4px; }
         .person-row {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 16px 12px;
+            padding: 14px 10px;
             border-radius: 16px;
-            transition: background 0.2s;
+            transition: all 0.2s;
             margin-bottom: 6px;
             background: #f8fafc;
             border: 2px solid transparent;
@@ -276,17 +294,17 @@
         .person-row.paid .person-name { color: var(--success); }
 
         .check-box {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border: 3px solid var(--border);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
             flex-shrink: 0;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 800;
             background: white;
         }
@@ -296,23 +314,40 @@
             color: white;
         }
 
+        /* İSİM ALANI - GENİŞ */
         .person-name {
             flex: 1;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 700;
             min-width: 0;
+            color: var(--text);
+            line-height: 1.3;
+        }
+        .person-name .full-name {
+            display: block;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            color: var(--text);
         }
 
+        /* FİYAT ALANI - DAR */
+        .amount-wrap {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .amount-wrap .tl {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
         .amount-box {
-            width: 120px;
-            padding: 12px 14px;
+            width: 90px;
+            padding: 10px 8px;
             border: 2px solid var(--border);
-            border-radius: 14px;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            font-size: 1rem;
             font-weight: 700;
             text-align: right;
             outline: none;
@@ -323,17 +358,17 @@
         .amount-box.paid { background: white; border-color: var(--success); color: var(--success); }
 
         .del-btn {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border: none;
             background: transparent;
             color: #cbd5e1;
             cursor: pointer;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             transition: all 0.2s;
             flex-shrink: 0;
         }
@@ -344,24 +379,20 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-top: 20px;
+            margin: 20px 0;
         }
         .actions .btn { width: 100%; }
-        @media (min-width: 640px) {
-            .actions { grid-template-columns: repeat(3, 1fr); }
-        }
 
-        /* YEARLY TOTAL - BOTTOM */
+        /* YEARLY TOTAL */
         .yearly-total {
             background: linear-gradient(135deg, #1e3a5f, #2563eb);
             color: white;
             border-radius: 20px;
             padding: 24px 20px;
-            margin-top: 20px;
             text-align: center;
         }
         .yearly-total h3 {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 2px;
             opacity: 0.8;
@@ -369,11 +400,11 @@
             margin-bottom: 8px;
         }
         .yearly-total .amount {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 800;
         }
         .yearly-total .detail {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             opacity: 0.8;
             margin-top: 4px;
             font-weight: 500;
@@ -456,25 +487,29 @@
 <body>
     <div class="header">
         <h1>🍽️ Yemek Ücreti Takip</h1>
-        <p>2026 Yılı - Aylık Sistem</p>
+        <p>2026 Yılı</p>
     </div>
 
     <div class="container">
-        <!-- Month Selector -->
-        <div class="month-selector no-print">
-            <h3>📅 Ay Seçin</h3>
-            <div class="month-grid" id="monthSelector"></div>
+        <!-- Month Selector - Dropdown -->
+        <div class="month-bar no-print">
+            <label>📅 Ay:</label>
+            <select class="month-select" id="monthSelect" onchange="selectMonth(this.value)"></select>
+            <div class="fee-input-wrap">
+                <label>💰 Ücret:</label>
+                <input type="number" class="fee-input" id="feeInput" onchange="updateFee(this.value)">
+            </div>
         </div>
 
         <!-- Current Month Display -->
-        <div class="current-month" id="currentMonthDisplay">
+        <div class="current-month">
             <div class="fee-label">Aylık Ücret</div>
             <div class="fee-display" id="currentFee">₺0</div>
             <h2 id="currentMonthName">Ay Seçin</h2>
         </div>
 
         <!-- Monthly Stats -->
-        <div class="monthly-stats" id="monthlyStats">
+        <div class="monthly-stats">
             <div class="stat-box">
                 <div class="label">Bu Ay Toplam</div>
                 <div class="value blue" id="monthTotal">₺0</div>
@@ -486,23 +521,17 @@
         </div>
 
         <!-- Add Person -->
-        <div class="section no-print">
-            <div class="section-title">
-                <div class="icon">👤</div>
-                Kişi Ekle
-            </div>
-            <div class="input-row">
-                <input type="text" id="newName" placeholder="Ad Soyad yazın..." onkeypress="if(event.key==='Enter') addPerson()">
+        <div class="add-section no-print">
+            <h3>👤 Yeni Kişi Ekle</h3>
+            <div class="add-row">
+                <input type="text" id="newName" placeholder="Ad Soyad..." onkeypress="if(event.key==='Enter') addPerson()">
                 <button class="btn btn-primary" onclick="addPerson()">➕ Ekle</button>
             </div>
         </div>
 
         <!-- People List -->
-        <div class="section" id="peopleSection">
-            <div class="section-title">
-                <div class="icon">📝</div>
-                <span id="peopleTitle">Ödemeler</span>
-            </div>
+        <div class="people-section">
+            <h3><span class="icon">📝</span> <span id="peopleTitle">Ödemeler</span></h3>
             <div class="person-list" id="personList"></div>
         </div>
 
@@ -511,13 +540,14 @@
             <button class="btn btn-success" onclick="exportData()">💾 Kaydet</button>
             <button class="btn btn-outline" onclick="showImport()">📂 Yükle</button>
             <button class="btn btn-outline" onclick="window.print()">🖨️ Yazdır</button>
+            <button class="btn btn-outline" onclick="resetData()">🗑️ Sıfırla</button>
         </div>
 
-        <!-- Yearly Total - Bottom -->
+        <!-- Yearly Total -->
         <div class="yearly-total" id="yearlyTotal">
             <h3>2026 Yıllık Toplam</h3>
             <div class="amount" id="yearlyAmount">₺0</div>
-            <div class="detail" id="yearlyDetail">0 kişi × 12 ay</div>
+            <div class="detail" id="yearlyDetail">0 kişi</div>
         </div>
     </div>
 
@@ -542,10 +572,10 @@
         let monthlyFees = [2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500];
         let people = ['Ahmet Yılmaz', 'Mehmet Kaya', 'Ayşe Demir', 'Fatma Şahin'];
         let data = {};
-        let currentMonth = new Date().getMonth(); // 0-11
+        let currentMonth = new Date().getMonth();
 
         function init() {
-            const saved = localStorage.getItem('yemekTakip_v4');
+            const saved = localStorage.getItem('yemekTakip_v5');
             if (saved) {
                 const p = JSON.parse(saved);
                 monthlyFees = p.monthlyFees || monthlyFees;
@@ -555,7 +585,7 @@
             }
             ensureData();
             people.sort((a,b) => a.localeCompare(b, 'tr'));
-            renderMonthSelector();
+            renderMonthSelect();
             render();
         }
 
@@ -569,31 +599,28 @@
         }
 
         function save() {
-            localStorage.setItem('yemekTakip_v4', JSON.stringify({monthlyFees, people, data, currentMonth}));
+            localStorage.setItem('yemekTakip_v5', JSON.stringify({monthlyFees, people, data, currentMonth}));
             updateStats();
         }
 
+        function renderMonthSelect() {
+            const sel = document.getElementById('monthSelect');
+            sel.innerHTML = months.map((m, i) => 
+                `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>${m} 2026</option>`
+            ).join('');
+            document.getElementById('feeInput').value = monthlyFees[currentMonth];
+        }
+
         function selectMonth(idx) {
-            currentMonth = idx;
+            currentMonth = parseInt(idx);
+            document.getElementById('feeInput').value = monthlyFees[currentMonth];
             save();
-            renderMonthSelector();
             render();
         }
 
-        function renderMonthSelector() {
-            const c = document.getElementById('monthSelector');
-            c.innerHTML = months.map((m, i) => `
-                <button class="month-btn ${i === currentMonth ? 'active' : ''}" onclick="selectMonth(${i})">
-                    ${m}
-                    <span class="fee">₺${monthlyFees[i]}</span>
-                </button>
-            `).join('');
-        }
-
-        function updateMonthFee(val) {
+        function updateFee(val) {
             monthlyFees[currentMonth] = parseFloat(val) || 0;
             save();
-            renderMonthSelector();
             render();
             showToast(months[currentMonth] + ' ücreti: ₺' + monthlyFees[currentMonth]);
         }
@@ -645,13 +672,11 @@
             const fee = monthlyFees[currentMonth];
             let monthTotal = people.length * fee;
             let monthPaid = 0;
-            let yearlyTotal = 0;
             let yearlyPaid = 0;
 
             people.forEach(p => {
                 monthPaid += data[p][currentMonth].paid;
                 months.forEach((_,i) => {
-                    yearlyTotal += monthlyFees[i];
                     yearlyPaid += data[p][i].paid;
                 });
             });
@@ -659,18 +684,16 @@
             document.getElementById('monthTotal').textContent = '₺' + monthTotal.toLocaleString('tr-TR',{minimumFractionDigits:2});
             document.getElementById('monthPaid').textContent = '₺' + monthPaid.toLocaleString('tr-TR',{minimumFractionDigits:2});
             document.getElementById('yearlyAmount').textContent = '₺' + yearlyPaid.toLocaleString('tr-TR',{minimumFractionDigits:2});
-            document.getElementById('yearlyDetail').textContent = people.length + ' kişi × 12 ay = ' + yearlyTotal.toLocaleString('tr-TR') + ' ₺';
+            document.getElementById('yearlyDetail').textContent = people.length + ' kişi kayıtlı';
         }
 
         function render() {
             const fee = monthlyFees[currentMonth];
 
-            // Current month display
             document.getElementById('currentFee').textContent = '₺' + fee.toLocaleString('tr-TR');
             document.getElementById('currentMonthName').textContent = months[currentMonth] + ' 2026';
             document.getElementById('peopleTitle').textContent = months[currentMonth] + ' Ödemeleri';
 
-            // Person list
             const list = document.getElementById('personList');
             list.innerHTML = people.map(person => {
                 const d = data[person][currentMonth];
@@ -680,11 +703,16 @@
                     <div class="check-box ${isPaid ? 'checked' : ''}" onclick="toggleStatus('${person}')">
                         ${isPaid ? '✓' : ''}
                     </div>
-                    <div class="person-name">${person}</div>
-                    <input type="number" class="amount-box ${isPaid ? 'paid' : ''}" 
-                        value="${d.paid > 0 ? d.paid : ''}" 
-                        placeholder="0"
-                        onchange="updatePaid('${person}',this.value)">
+                    <div class="person-name">
+                        <span class="full-name">${person}</span>
+                    </div>
+                    <div class="amount-wrap">
+                        <span class="tl">₺</span>
+                        <input type="number" class="amount-box ${isPaid ? 'paid' : ''}" 
+                            value="${d.paid > 0 ? d.paid : ''}" 
+                            placeholder="0"
+                            onchange="updatePaid('${person}',this.value)">
+                    </div>
                     <button class="del-btn no-print" onclick="removePerson('${person}')">🗑</button>
                 </div>`;
             }).join('');
@@ -716,7 +744,7 @@
                 if (parsed.currentMonth !== undefined) currentMonth = parsed.currentMonth;
                 people.sort((a,b) => a.localeCompare(b, 'tr'));
                 save();
-                renderMonthSelector();
+                renderMonthSelect();
                 render();
                 hideImport();
                 document.getElementById('importText').value = '';
@@ -724,6 +752,16 @@
             } catch(e) {
                 showToast('Hata: ' + e.message);
             }
+        }
+
+        function resetData() {
+            if (!confirm('TÜM VERİLER SİLİNECEK! Emin misiniz?')) return;
+            people = [];
+            data = {};
+            monthlyFees = [2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500];
+            save();
+            render();
+            showToast('Sistem sıfırlandı');
         }
 
         function showToast(msg) {
