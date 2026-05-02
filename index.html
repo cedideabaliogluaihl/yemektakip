@@ -70,7 +70,7 @@
   .sc-check.partial { background: var(--orange-light); border-color: var(--orange); color: var(--orange); }
   .sc-name-wrap { flex: 1; min-width: 0; }
   .sc-name { font-size: 15px; font-weight: 700; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sc-name.done { text-decoration: line-through; text-decoration-color: var(--green); text-decoration-thickness: 3px; color: var(--text2); }
+  .sc-name.done { text-decoration: line-through; text-decoration-color: var(--green); text-decoration-thickness: 2.5px; color: var(--text); }
   .sc-paid-label { font-size: 11px; color: var(--green); font-weight: 700; margin-top: 2px; display: none; }
   .sc-paid-label.show { display: block; }
   .sc-stats { display: flex; gap: 7px; }
@@ -232,6 +232,26 @@ function studentData(sid){
 }
 function sortedStudents(){return[...state.students].sort((a,b)=>a.name.localeCompare(b.name,'tr',{sensitivity:'base'}))}
 
+// ── TOGGLE TAM ÖDEME ──
+function toggleFullPayment(sid){
+  const f=fee(month);
+  if(!f){alert(MONTHS[month]+' ayı ücreti girilmemiş.');return}
+  const key=sid+'_'+month;
+  const pays=state.payments[key]||[];
+  const paid=pays.reduce((s,p)=>s+p.amount,0);
+  const isDone=paid>=f;
+  if(isDone){
+    // Ödemeleri geri al - bu ayın ödemelerini sil
+    if(!confirm('Bu ayın ödemesi silinsin mi?'))return;
+    state.payments[key]=[];
+  } else {
+    // Tam ödeme ekle: önce varsa mevcut ödemeleri temizle, sonra tam tutarı ekle
+    if(paid>0 && !confirm('Mevcut kısmi ödeme silinip tam ödeme kaydedilsin mi?'))return;
+    state.payments[key]=[{amount:f,date:new Date().toISOString().slice(0,10),id:'p'+Date.now()}];
+  }
+  save();render();
+}
+
 // ── RENDER ──
 function render(){
   document.getElementById('topTitle').textContent='Yemek Takip — '+MONTHS[month];
@@ -279,13 +299,15 @@ function renderList(){
     else if(d.debt<=0){badge=`<span class="badge paid">✓ Ödendi</span>`;kalan='color:var(--green)'}
     else if(d.paid>0){badge=`<span class="badge partial">Eksik</span>`;kalan='color:var(--orange)'}
     else{badge=`<span class="badge debt">Borçlu</span>`;kalan='color:var(--red)'}
-    const checkClass = !f ? '' : d.debt<=0 ? 'done' : d.paid>0 ? 'partial' : '';
-    const checkIcon = !f ? '' : d.debt<=0 ? '✓' : d.paid>0 ? '~' : '';
-    const nameClass = (!f||d.debt>0) ? '' : 'done';
-    const paidLabel = d.paid>0 ? `<div class="sc-paid-label show">₺${d.paid.toLocaleString('tr-TR')} ödendi</div>` : '<div class="sc-paid-label"></div>';
+    const isDone = f > 0 && d.debt <= 0;
+    const checkClass = !f ? '' : isDone ? 'done' : '';
+    const checkIcon = isDone ? '✓' : '';
+    const nameClass = isDone ? 'done' : '';
+    const paidTxt = d.paid > 0 ? `₺${d.paid.toLocaleString('tr-TR')} ödendi` : '';
+    const paidLabel = paidTxt ? `<div class="sc-paid-label show">${paidTxt}</div>` : '<div class="sc-paid-label"></div>';
     return`<div class="student-card" onclick="openDetail('${s.id}')">
       <div class="sc-top">
-        <div class="sc-check ${checkClass}">${checkIcon}</div>
+        <div class="sc-check ${checkClass}" onclick="event.stopPropagation();toggleFullPayment('${s.id}')">${checkIcon}</div>
         <div class="sc-name-wrap">
           <span class="sc-name ${nameClass}">${s.name}</span>
           ${paidLabel}
@@ -293,7 +315,7 @@ function renderList(){
       </div>
       <div class="sc-stats">
         <div class="sc-stat"><div class="ss-label">Aylık</div><div class="ss-val" style="color:var(--text2)">₺${f||'?'}</div></div>
-        <div class="sc-stat"><div class="ss-label">Ödenen</div><div class="ss-val" style="color:var(--green)">₺${d.paid}</div></div>
+        <div class="sc-stat"><div class="ss-label">Ödenen</div><div class="ss-val" style="color:var(--green)">${d.paid>0?'₺'+d.paid.toLocaleString('tr-TR'):'-'}</div></div>
         <div class="sc-stat"><div class="ss-label">Kalan</div><div class="ss-val" style="${kalan}">₺${Math.max(0,d.debt)}</div></div>
       </div>
     </div>`}).join('')
