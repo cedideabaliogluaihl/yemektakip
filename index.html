@@ -64,9 +64,15 @@
 
   .student-card { background: var(--bg3); border-radius: var(--radius); border: 1px solid var(--border); padding: 13px 14px; margin-bottom: 9px; cursor: pointer; transition: transform 0.1s; }
   .student-card:active { transform: scale(0.98); }
-  .sc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
-  .sc-name { font-size: 15px; font-weight: 700; }
-  .sc-no { font-size: 12px; background: var(--bg2); color: var(--text2); padding: 3px 9px; border-radius: 12px; font-weight: 600; }
+  .sc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .sc-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all .2s; background: var(--bg2); }
+  .sc-check.done { background: var(--green); border-color: var(--green); color: #fff; }
+  .sc-check.partial { background: var(--orange-light); border-color: var(--orange); color: var(--orange); }
+  .sc-name-wrap { flex: 1; min-width: 0; }
+  .sc-name { font-size: 15px; font-weight: 700; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sc-name.done { text-decoration: line-through; text-decoration-color: var(--green); text-decoration-thickness: 3px; color: var(--text2); }
+  .sc-paid-label { font-size: 11px; color: var(--green); font-weight: 700; margin-top: 2px; display: none; }
+  .sc-paid-label.show { display: block; }
   .sc-stats { display: flex; gap: 7px; }
   .sc-stat { flex: 1; background: var(--bg); border-radius: 9px; padding: 6px 4px; text-align: center; }
   .ss-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text3); }
@@ -273,13 +279,22 @@ function renderList(){
     else if(d.debt<=0){badge=`<span class="badge paid">✓ Ödendi</span>`;kalan='color:var(--green)'}
     else if(d.paid>0){badge=`<span class="badge partial">Eksik</span>`;kalan='color:var(--orange)'}
     else{badge=`<span class="badge debt">Borçlu</span>`;kalan='color:var(--red)'}
+    const checkClass = !f ? '' : d.debt<=0 ? 'done' : d.paid>0 ? 'partial' : '';
+    const checkIcon = !f ? '' : d.debt<=0 ? '✓' : d.paid>0 ? '~' : '';
+    const nameClass = (!f||d.debt>0) ? '' : 'done';
+    const paidLabel = d.paid>0 ? `<div class="sc-paid-label show">₺${d.paid.toLocaleString('tr-TR')} ödendi</div>` : '<div class="sc-paid-label"></div>';
     return`<div class="student-card" onclick="openDetail('${s.id}')">
-      <div class="sc-top"><span class="sc-name">${i+1}. ${s.name}</span><span class="sc-no">${s.no}</span></div>
+      <div class="sc-top">
+        <div class="sc-check ${checkClass}">${checkIcon}</div>
+        <div class="sc-name-wrap">
+          <span class="sc-name ${nameClass}">${s.name}</span>
+          ${paidLabel}
+        </div>
+      </div>
       <div class="sc-stats">
         <div class="sc-stat"><div class="ss-label">Aylık</div><div class="ss-val" style="color:var(--text2)">₺${f||'?'}</div></div>
         <div class="sc-stat"><div class="ss-label">Ödenen</div><div class="ss-val" style="color:var(--green)">₺${d.paid}</div></div>
         <div class="sc-stat"><div class="ss-label">Kalan</div><div class="ss-val" style="${kalan}">₺${Math.max(0,d.debt)}</div></div>
-        <div class="sc-stat" style="display:flex;align-items:center;justify-content:center">${badge}</div>
       </div>
     </div>`}).join('')
 }
@@ -339,7 +354,6 @@ function openStudentModal(){
   openModal(`
     <h2>Öğrenci Ekle</h2>
     <div class="fg"><label>Adı Soyadı</label><input id="s_name" placeholder="Ad Soyad" autofocus></div>
-    <div class="fg"><label>Öğrenci Numarası</label><input id="s_no" placeholder="Numara" inputmode="numeric"></div>
     <div class="btn-row">
       <button class="btn btn-cancel" onclick="closeModal()">İptal</button>
       <button class="btn btn-primary" onclick="addStudent()">Ekle</button>
@@ -347,10 +361,8 @@ function openStudentModal(){
 }
 function addStudent(){
   const name=document.getElementById('s_name').value.trim();
-  const no=document.getElementById('s_no').value.trim();
-  if(!name||!no){alert('Ad ve numara zorunludur.');return}
-  if(state.students.find(s=>s.no===no)){alert('Bu numara zaten kayıtlı.');return}
-  state.students.push({id:'s'+Date.now(),name,no});
+  if(!name){alert('İsim zorunludur.');return}
+  state.students.push({id:'s'+Date.now(),name});
   save();closeModal();render()
 }
 
@@ -359,7 +371,7 @@ function openPaymentModal(sid){
   if(!state.students.length){alert('Önce öğrenci ekleyin.');return}
   const f=fee(month);
   if(!f){if(confirm(MONTHS[month]+' ayı ücreti girilmemiş. Girmek ister misiniz?'))openFeeModal();return}
-  const opts=sortedStudents().map(s=>`<option value="${s.id}"${s.id===sid?' selected':''}>${s.name} (${s.no})</option>`).join('');
+  const opts=sortedStudents().map(s=>`<option value="${s.id}"${s.id===sid?' selected':''}>${s.name}</option>`).join('');
   openModal(`
     <h2>${MONTHS[month]} — Ödeme Ekle</h2>
     <div class="fg"><label>Öğrenci</label><select id="p_sid" onchange="updateHint()">${opts}</select></div>
