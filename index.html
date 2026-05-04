@@ -189,12 +189,14 @@ async function pushToGist(){
   if(!cfg.token||!cfg.gistId)return;
   dot('spin');bar('GitHub\'a kaydediliyor...',true);
   try{
+    const payload=Object.assign({},state,{updatedAt:new Date().toISOString()});
     const r=await fetch('https://api.github.com/gists/'+cfg.gistId,{
       method:'PATCH',
       headers:{'Authorization':'token '+cfg.token,'Content-Type':'application/json'},
-      body:JSON.stringify({files:{'yemek_data.json':{content:JSON.stringify(state,null,2)}}})
+      body:JSON.stringify({files:{'yemek_data.json':{content:JSON.stringify(payload,null,2)}}})
     });
     if(!r.ok)throw new Error('HTTP '+r.status);
+    localStorage.setItem('yt_local_updated',payload.updatedAt);
     dot('ok');bar('✓ GitHub\'a kaydedildi',true);
     setTimeout(()=>bar('',false),2500);
   }catch(e){dot('err');bar('✗ Hata: '+e.message,true);setTimeout(()=>bar('',false),4000)}
@@ -210,14 +212,52 @@ async function pullFromGist(){
     const content=data.files['yemek_data.json']?.content;
     if(content){
       const parsed=JSON.parse(content);
-      if(parsed&&parsed.students){state=parsed;saveLocal();render();dot('ok');bar('✓ GitHub\'dan yüklendi',true);setTimeout(()=>bar('',false),2500);return}
+      // Gist boşsa lokal veriyi silme
+      if(parsed&&parsed.students&&parsed.students.length===0&&state.students.length>0){
+        dot('ok');bar('Gist boş — lokal veri korundu',true);setTimeout(()=>bar('',false),2500);
+        await pushToGist();return;
+      }
+      if(parsed&&parsed.students){
+        state=parsed;saveLocal();render();
+        localStorage.setItem('yt_local_updated',parsed.updatedAt||'');
+        dot('ok');bar('✓ GitHub\'dan yüklendi',true);setTimeout(()=>bar('',false),2500);return;
+      }
     }
     dot('ok');bar('GitHub boş — yerel veri kullanılıyor',true);setTimeout(()=>bar('',false),2500);
   }catch(e){dot('err');bar('✗ Yükleme hatası: '+e.message,true);setTimeout(()=>bar('',false),4000)}
 }
 
+// Sessiz otomatik pull - 30sn'de bir
+let lastRemoteUpdatedAt=null;
+async function silentPull(){
+  if(!cfg.token||!cfg.gistId)return;
+  try{
+    const r=await fetch('https://api.github.com/gists/'+cfg.gistId,{headers:{'Authorization':'token '+cfg.token}});
+    if(!r.ok)return;
+    const data=await r.json();
+    const content=data.files['yemek_data.json']?.content;
+    if(!content)return;
+    const parsed=JSON.parse(content);
+    const remoteUpdatedAt=parsed.updatedAt||null;
+    if(lastRemoteUpdatedAt===null||remoteUpdatedAt!==lastRemoteUpdatedAt){
+      lastRemoteUpdatedAt=remoteUpdatedAt;
+      // Gist boşsa lokal veriyi koruma
+      if(parsed.students&&parsed.students.length===0&&state.students.length>0){
+        await pushToGist();return;
+      }
+      const localUpdated=localStorage.getItem('yt_local_updated')||'0';
+      if(remoteUpdatedAt&&remoteUpdatedAt>localUpdated){
+        state=parsed;saveLocal();render();
+        localStorage.setItem('yt_local_updated',remoteUpdatedAt);
+        dot('ok');bar('↓ Güncellendi',true);setTimeout(()=>bar('',false),2000);
+      }
+    }
+  }catch(e){console.warn('silentPull:',e.message)}
+}
+
 function save(){
   saveLocal();
+  localStorage.setItem('yt_local_updated',new Date().toISOString());
   if(cfg.token&&cfg.gistId){clearTimeout(syncTimer);syncTimer=setTimeout(pushToGist,1500)}
 }
 
@@ -489,7 +529,10 @@ function printMonth(){
 
 // ── INIT ──
 render();
-if(cfg.token&&cfg.gistId){pullFromGist()}else{dot('')}
+if(cfg.token&&cfg.gistId){
+  pullFromGist();
+  setInterval(silentPull,30000);
+}else{dot('')}
 </script>
 </body>
 </html>
