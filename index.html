@@ -344,6 +344,9 @@ function openSettings(){
     <div class="btn-row">
       <button class="btn btn-blue" onclick="closeModal();pullFromGist()">📥 GitHub'dan Yükle</button>
       <button class="btn btn-blue" onclick="closeModal();pushToGist()">📤 GitHub'a Gönder</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-danger" onclick="resetAll()">🗑 Tüm Veriyi Sıfırla</button>
     </div>`)
 }
 async function saveCfgAndSync(){
@@ -351,6 +354,13 @@ async function saveCfgAndSync(){
   const gistId=document.getElementById('c_gid').value.trim();
   if(!token||!gistId){alert('Token ve Gist ID zorunludur.');return}
   cfg={token,gistId};saveCfg();closeModal();await pushToGist()
+}
+
+function resetAll(){
+  if(!confirm('Tüm öğrenci ve ödeme verileri silinecek. Emin misiniz?'))return;
+  state={students:[],payments:{},fees:{}};
+  saveLocal();closeModal();render();
+  if(cfg.token&&cfg.gistId)pushToGist();
 }
 
 // ── FEE ──
